@@ -1,0 +1,43 @@
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  width: 200px;
+}
+
+.sidenav .mat-toolbar {
+  background: inherit;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+
+.app-wrapper{
+  margin: 10px 10px;
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.icon-spacer {
+  padding: 0 14px;
+}
+
+.header-logo{
+  // font-size: 72px;
+  background: -webkit-linear-gradient(#673ab7, #f4553cde);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.active{
+  background: rgba(103,58,183,.15);
+  color: #673ab7;
+}
+

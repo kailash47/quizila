@@ -1,0 +1,49 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/quizilaui/dist
+/quizilaui/tmp
+/quizilaui/out-tsc
+# Only exists if Bazel was run
+/quizilaui/bazel-out
+
+# dependencies
+/quizilaui/node_modules
+
+# profiling files
+/quizilauichrome-profiler-events*.json
+
+# IDEs and editors
+/quizilaui/.idea
+/quizilaui/.project
+/quizilaui/.classpath
+/quizilaui/.c9/
+/quizilaui/*.launch
+/quizilaui/.settings/
+/quizilaui/*.sublime-workspace
+
+# IDE - VSCode
+/quizilaui.vscode/*
+/quizilaui!.vscode/settings.json
+/quizilaui!.vscode/tasks.json
+/quizilaui!.vscode/launch.json
+/quizilaui!.vscode/extensions.json
+/quizilaui.history/*
+
+# misc
+/quizilaui/.sass-cache
+/quizilaui/connect.lock
+/quizilaui/coverage
+/quizilaui/libpeerconnection.log
+/quizilauinpm-debug.log
+/quizilauiyarn-error.log
+/quizilauitestem.log
+/quizilaui/typings
+
+# System Files
+/quizilaui/.DS_Store
+/quizilaui/Thumbs.db
+
+/quizila/node_modules/
+/quizila/.env
+/quizila/uploads/

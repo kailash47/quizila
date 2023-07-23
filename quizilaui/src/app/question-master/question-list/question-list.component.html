@@ -1,0 +1,263 @@
+<h2 class="mat-h2">Question Master</h2>
+<div class="mat-elevation-z2">
+  <div class="serach-box">
+    <mat-form-field class="mr-5">
+      <mat-label>Search</mat-label>
+      <input matInput [formControl]="searchKey" type="text" placeholder="Search by Name">
+      <button matSuffix mat-icon-button aria-label="Clear">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+    <button class="mr-5" mat-raised-button [matMenuTriggerFor]="menuA" color="primary">View Action <mat-icon>expand_more
+      </mat-icon></button>
+    <mat-menu #menuA="matMenu">
+      <button mat-menu-item (click)="openDialog(catDialog,undefined,'add')">
+        <mat-icon color="primary">add_circle</mat-icon><span>Add Question</span>
+      </button>
+    </mat-menu>
+  </div>
+
+  <table mat-table [dataSource]="datasource?.data" class="full-width-table" matSort aria-label="Elements">
+
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Question</th>
+      <td mat-cell *matCellDef="let row">
+        {{row?.qtype == 'MCQ' ? '🤹‍♀️' : '✍'}} {{row?.question}} 
+        <button mat-button color="primary"><span *ngFor="let cat of row?.qz_qcategories">{{cat?.catname}} </span></button>
+        <!-- <button mat-button color="primary">Primary</button> -->
+        <!-- <mat-chip-list class="example-chip" cdkDropList cdkDropListOrientation="horizontal">
+          <mat-chip class="example-box" *ngFor="let cat of row?.qz_qcategories"> {{cat?.catname}} </mat-chip>
+        </mat-chip-list> -->
+        <!-- <span *ngFor="let cat of row?.qz_qcategories">{{cat?.catname}}</span> -->
+        <!-- <app-editor-page [holderId]="row.id" [data]="row?.question"  (editorChange)="update($event)"></app-editor-page> -->
+      </td>
+    </ng-container>
+
+    <!-- Created Column -->
+    <ng-container matColumnDef="created_at">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
+      <td mat-cell *matCellDef="let row">{{row.created_at | date:'dd/MM/yyyy h:mm a'}}</td>
+    </ng-container>
+
+    <!-- Updated Column -->
+    <ng-container matColumnDef="updated_at">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Updated At</th>
+      <td mat-cell *matCellDef="let row">{{row.created_at | date:'dd/MM/yyyy h:mm a'}}</td>
+    </ng-container>
+
+    <!-- Action Column -->
+    <ng-container matColumnDef="action" justify="end">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header justify="end">Action</th>
+      <td mat-cell *matCellDef="let row" justify="end">
+        <button mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="icon button with a menu icon">
+          <mat-icon>menu_open</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="openDialog(catDialog,row,'update')">
+            <mat-icon color="primary">edit_note</mat-icon><span>Edit</span>
+          </button>
+          <button mat-menu-item (click)="openDialog(deleteDialog,row,'delete')">
+            <mat-icon color="primary">delete</mat-icon><span>Delete</span>
+          </button>
+          <button mat-menu-item (click)="openDialog(optViewDialog,row,'optview')">
+            <mat-icon color="primary">view_list</mat-icon><span>View Options</span>
+          </button>
+          <button mat-menu-item (click)="openDialog(optDialog,row,'optadd')">
+            <mat-icon color="primary">add_circle</mat-icon><span>Add Options</span>
+          </button>
+        </mat-menu>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <!-- Row shown when there is no matching data. -->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell text-center" colspan="4">No data matching the filter "{{searchKey?.value}}"</td>
+    </tr>
+  </table>
+
+  <mat-paginator [length]="datasource.count" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]"
+    aria-label="Select page" (page)="onPageChange($event)">
+  </mat-paginator>
+</div>
+
+<ng-template #catDialog>
+  <h1 mat-dialog-title>{{ isUpdate ? 'Update' :'Add'}} Question</h1>
+  <div mat-dialog-content>
+    <div class="dialog-form">
+      <form [formGroup]="questionFG">
+
+        <!-- <app-editor-page [holderId]="'edi'"  (editorChange)="update($event)"></app-editor-page> -->
+        <!-- <div id="editor-js"></div> -->
+        <mat-form-field class="form-full-width">
+          <mat-label>Question</mat-label>
+          <textarea matInput formControlName="question" placeholder="Enter question" required></textarea>
+          <!-- <input matInput formControlName="question" placeholder="Enter question" required> -->
+          <mat-error *ngIf="questionFG.get('question')?.hasError('required')">
+            Question is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-full-width">
+          <mat-label>Question Type</mat-label>
+          <mat-select formControlName="qtype">
+            <mat-option value="MCQ">MCQ</mat-option>
+            <mat-option value="SUBJECTIVE">SUBJECTIVE</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="form-full-width">
+          <mat-label>Select Category</mat-label>
+          <mat-select formControlName="cats" multiple>
+            <!-- <mat-option value="MCQ">MCQ</mat-option>
+            <mat-option value="SUBJECTIVE">SUBJECTIVE</mat-option> -->
+            <mat-option *ngFor="let cat of catList" [value]="cat.id">
+              {{cat.catname}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="form-full-width">
+          <mat-label>Answer</mat-label>
+          <input matInput formControlName="answer" placeholder="Enter Answer">
+          <mat-error *ngIf="questionFG.get('answer')?.hasError('required')">
+            Answer is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+      </form>
+    </div>
+  </div>
+  <div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+    <button *ngIf="!isUpdate" mat-button color="primary" [disabled]="questionFG?.invalid" (click)="addQuestion()">Submit</button>
+    <button *ngIf="isUpdate" mat-button color="primary" [disabled]="questionFG?.invalid" (click)="updateQuestion()">Update</button>
+  </div>
+</ng-template>
+
+<ng-template #optDialog>
+  <h1 mat-dialog-title>{{ isUpdateOpt ? 'Update' :'Add'}} Option</h1>
+  <div mat-dialog-content>
+    <div class="dialog-form">
+      <form [formGroup]="optionFG">
+        <mat-form-field class="form-full-width">
+          <mat-label>Options</mat-label>
+          <input matInput formControlName="option" placeholder="Enter option" required>
+          <mat-error *ngIf="optionFG.get('option')?.hasError('required')">
+            option is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-full-width">
+          <mat-label>Is Correct</mat-label>
+          <mat-select formControlName="iscorrect">
+            <mat-option value="true">Yes</mat-option>
+            <mat-option value="false">No</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="form-full-width">
+          <mat-label>Description</mat-label>
+          <input matInput formControlName="desc" placeholder="Enter Description">
+          <mat-error *ngIf="optionFG.get('desc')?.hasError('required')">
+            Description is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+      </form>
+    </div>
+  </div>
+  <div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+    <button *ngIf="!isUpdateOpt" mat-button color="primary" [disabled]="optionFG?.invalid" (click)="addOption()">Submit</button>
+    <button *ngIf="isUpdateOpt" mat-button color="primary" [disabled]="optionFG?.invalid" (click)="updateOption()">Update</button>
+  </div>
+</ng-template>
+
+<ng-template #optViewDialog>
+  <h1 mat-dialog-title>Options</h1>
+  <div mat-dialog-content>
+    <table mat-table [dataSource]="datasourceOpt?.data" class="full-width-table" matSort aria-label="Elements">
+
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Option</th>
+        <td mat-cell *matCellDef="let row">{{row?.option}}</td>
+      </ng-container>
+
+      <!-- Correct Column -->
+      <ng-container matColumnDef="iscorrect">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Correct</th>
+        <td mat-cell *matCellDef="let row">{{(row?.iscorrect == true || row?.iscorrect == 'true') ? 'YES':'NO'}}</td>
+      </ng-container>
+  
+      <!-- Created Column -->
+      <ng-container matColumnDef="created_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
+        <td mat-cell *matCellDef="let row">{{row.created_at | date:'dd/MM/yyyy h:mm a'}}</td>
+      </ng-container>
+  
+      <!-- Updated Column -->
+      <ng-container matColumnDef="updated_at">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Updated At</th>
+        <td mat-cell *matCellDef="let row">{{row.created_at | date:'dd/MM/yyyy h:mm a'}}</td>
+      </ng-container>
+  
+      <!-- Action Column -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="icon button with a menu icon">
+            <mat-icon>menu_open</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="openDialog(optDialog,row,'optupd')">
+              <mat-icon color="primary">edit_note</mat-icon><span>Edit</span>
+            </button>
+            <button mat-menu-item (click)="openDialog(deleteOptDialog,row,'deleteopt')">
+              <mat-icon color="primary">delete</mat-icon><span>Delete</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumnsOpt"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumnsOpt"></tr>
+      <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" colspan="4">No data matching the filter "{{searchKey?.value}}"</td>
+      </tr>
+    </table>
+  
+    <mat-paginator [length]="datasource.count" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]"
+      aria-label="Select page" (page)="onPageChangeOpt($event)">
+    </mat-paginator>
+  </div>
+  <div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+  </div>
+</ng-template>
+
+<ng-template #deleteDialog>
+  <h1 mat-dialog-title>Delete Question</h1>
+<div mat-dialog-content>
+  <p>Are you sure you want to delete this item?</p>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-raised-button color="warn" (click)="deleteQuestion()">Delete</button>
+</div>
+</ng-template>
+
+<ng-template #deleteOptDialog>
+  <h1 mat-dialog-title>Delete Option</h1>
+<div mat-dialog-content>
+  <p>Are you sure you want to delete this item?</p>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-raised-button color="warn" (click)="deleteOption()">Delete</button>
+</div>
+</ng-template>

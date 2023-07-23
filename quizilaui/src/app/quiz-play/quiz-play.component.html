@@ -1,0 +1,87 @@
+<mat-toolbar>
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>Quizila</span>
+  <span class="toolbar-spacer"></span>
+  <!-- <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+    <mat-icon>favorite</mat-icon>
+  </button> -->
+  {{user?.email}}
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon" matTooltip="Logout" (click)="signOut()">
+     <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
+<section *ngIf="!isQuizStart" class="quizWrapper">
+  <mat-card *ngFor="let item of myActiveQuiz" class="example-card">
+    <mat-card-header>
+      <mat-card-title>
+        {{item?.qz_quiz?.quizname}}
+        <!-- <span class="more-button">No.of Question {{item?.qz_quiz?.qz_questions.length}} in {{item?.qz_quiz?.quiztime}}</span> -->
+        <!-- <button mat-icon-button class="more-button"aria-label="Toggle menu" color="primary">
+          <mat-icon>more_vert</mat-icon>
+        </button> -->
+      </mat-card-title>
+      <mat-card-subtitle>Read instruction carefully</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <h1>No. of questions : {{item?.qz_quiz?.qz_questions?.length}}</h1>
+      <h1>Time : {{item?.qz_quiz?.quiztime}}</h1>
+      {{item?.qz_quiz?.instructions}}
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-actions align="end">
+      <!-- <button mat-button (click)="previousQuestion()">Previous</button> -->
+      <button mat-button (click)="startQuiz(item)">Start</button>
+    </mat-card-actions>
+  </mat-card>
+</section>
+<section *ngIf="isQuizStart" class="quizWrapper">
+  <mat-card class="example-card">
+    <mat-card-header>
+      <mat-card-title>
+        {{minutes}} : {{seconds}}
+        <!-- <span class="more-button">{{minutes}} : {{seconds}}</span> -->
+      </mat-card-title>
+      <mat-card-subtitle>Time</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div>
+        <div>
+          <h1>Q{{questionIndex+1}}. {{currentQuestion?.question}}</h1>
+          <mat-divider></mat-divider>
+
+          <mat-radio-group *ngIf="currentQuestion?.qtype == 'MCQ'" aria-labelledby="quiz-radio-group-label" class="quiz-radio-group">
+            <mat-radio-button class="quiz-radio-button" *ngFor="let opt of currentQuestion?.qz_options" [value]="opt.id"
+              (change)="optionSelected(opt)" [checked]="opt.id == currentQuestion.selectedOpt">
+              {{opt?.option}} {{opt.selectedOpt}}
+            </mat-radio-button>
+          </mat-radio-group>
+
+          <mat-form-field *ngIf="currentQuestion?.qtype == 'SUBJECTIVE'" class="form-full-width">
+            <mat-label>Textarea</mat-label>
+            <textarea matInput></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-actions align="end">
+      <button *ngIf="questionIndex" mat-button (click)="previousQuestion(questionIndex)">Previous</button>
+      <button *ngIf="questionIndex+1 != noOfQuestion" mat-button (click)="nextQuestion(questionIndex)">Next</button>
+      <button *ngIf="!(questionIndex+1 != noOfQuestion)" mat-button (click)="openDialog(submitDialog)">Submit</button>
+    </mat-card-actions>
+  </mat-card>
+</section>
+
+<ng-template #submitDialog>
+  <h1 mat-dialog-title>Submit Quiz</h1>
+<div mat-dialog-content>
+  <p>Are you sure you want to delete this item?</p>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-raised-button color="warn" (click)="submitQuiz()">Yes</button>
+</div>
+</ng-template>

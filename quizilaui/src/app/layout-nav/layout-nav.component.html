@@ -1,0 +1,57 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav color="primary" #drawer class="sidenav" fixedInViewport [fixedTopGap]="0" [fixedBottomGap]="0"
+      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+      [mode]="(isHandset$ | async) ? 'over' : 'side'"
+      [opened]="(isHandset$ | async) === false">
+    <mat-toolbar>
+      <!-- <img src="assets/icons/app-logo-2.png" alt="app-logo"> -->
+      <mat-icon color="primary" aria-label="menu icon">insights</mat-icon> &nbsp; 
+      <span class="header-logo">Quizila</span>
+    </mat-toolbar>
+    <mat-divider></mat-divider>
+    <mat-nav-list>
+      <a mat-list-item routerLinkActive="active" routerLink="/app/dashboard"><mat-icon color="primary">arrow_right</mat-icon>&nbsp;Dashboard</a>
+      <a mat-list-item routerLinkActive="active" routerLink="/app/question/category-master"><mat-icon color="primary">arrow_right</mat-icon>&nbsp;Category</a>
+      <a mat-list-item routerLinkActive="active" routerLink="/app/question/question-master"><mat-icon color="primary">arrow_right</mat-icon>&nbsp;Questions</a>
+      <a mat-list-item routerLinkActive="active" routerLink="/app/quiz/quiz-master"><mat-icon color="primary">arrow_right</mat-icon>&nbsp;Quiz</a>
+      <a mat-list-item routerLinkActive="active" routerLink="/app/user/user-list"><mat-icon color="primary">arrow_right</mat-icon>&nbsp;Users</a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="drawer.toggle()"
+        >
+        <!-- *ngIf="isHandset$ | async" -->
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span>Quizila Admin</span>
+      <span class="toolbar-spacer"></span>
+      <!-- <button mat-icon-button class="icon-spacer" [matMenuTriggerFor]="menuB" aria-label="icon-button with manage account icon">
+        <mat-icon matBadge="15" matBadgeColor="accent" >notifications</mat-icon>
+      </button>
+      <mat-menu #menuB="matMenu">
+        <button mat-menu-item>Profile</button>
+        <button mat-menu-item>Change Password</button>
+        <button mat-menu-item>Logout</button>
+      </mat-menu> -->
+      <button mat-icon-button class="icon-spacer" [matMenuTriggerFor]="menuA" aria-label="icon-button with manage account icon">
+        <mat-icon>manage_accounts</mat-icon>
+      </button>
+      
+      <mat-menu #menuA="matMenu">
+        <!-- <button mat-menu-item><mat-icon color="primary">manage_accounts</mat-icon><span>Profile</span></button> -->
+        <!-- <button mat-menu-item><mat-icon color="primary">password</mat-icon><span>Change Password</span></button> -->
+        <button mat-menu-item (click)="signOut()"><mat-icon color="primary">logout</mat-icon><span>Logout</span></button>
+      </mat-menu>
+    </mat-toolbar>
+    <!-- Add Content Here -->
+    <div class="app-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+    
+  </mat-sidenav-content>
+</mat-sidenav-container>
